@@ -9,17 +9,8 @@ on:
       resourceGroupName:
         required: true
         type: string
-      reviewApiUrl:
-        required: true
-        type: string
     secrets:
-      AZURE_CLIENT_ID:
-        required: true
-      AZURE_TENANT_ID:
-        required: true
-      AZURE_SUBSCRIPTION_ID:
-        required: true
-      reviewApiKey:
+      AZURE_SPN:
         required: true
 
 permissions:
@@ -31,12 +22,11 @@ jobs:
      runs-on: ubuntu-latest
      steps: 
      - uses: actions/checkout@v2
-     - uses: azure/login@v1
-       name: Sign in to Azure
+     - uses: actions/checkout@v2 
+     - name: Azure Login
+       uses: Azure/login@v1.4.6
        with:
-        client-id: ${{ secrets.AZURE_CLIENT_ID }}
-        tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-        subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+         creds: ${{ secrets.AZURE_SPN_CREDENTIAL }}
      - if: inputs.environmentType != 'Production'
        uses: azure/arm-deploy@v1
        name: Run preflight validation
@@ -46,8 +36,7 @@ jobs:
          template: ./deploy/main.bicep
          parameters: >
            environmentType=${{ inputs.environmentType }}
-           reviewApiUrl=${{ inputs.reviewApiUrl }}
-           reviewApiKey=${{ secrets.reviewApiKey }}
+           
          deploymentMode: Validate
      - if: inputs.environmentType == 'Production'
        uses: azure/arm-deploy@v1
@@ -58,8 +47,7 @@ jobs:
          template: ./deploy/main.bicep
          parameters: >
            environmentType=${{ inputs.environmentType }}
-           reviewApiUrl=${{ inputs.reviewApiUrl }}
-           reviewApiKey=${{ secrets.reviewApiKey }}
+           
          additionalArguments: --what-if
  
   deploy:
@@ -70,12 +58,11 @@ jobs:
       appServiceAppHostName: ${{ steps.deploy.outputs.appServiceAppHostName }}
     steps:
     - uses: actions/checkout@v2
-    - uses: azure/login@v1
-      name: Sign in to Azure
+    - uses: actions/checkout@v2 
+    - name: Azure Login
+      uses: Azure/login@v1.4.6
       with:
-        client-id: ${{ secrets.AZURE_CLIENT_ID }}
-        tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-        subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+        creds: ${{ secrets.AZURE_SPN_CREDENTIAL }}
     - uses: azure/arm-deploy@v1
       id: deploy
       name: Deploy Bicep file
@@ -86,8 +73,7 @@ jobs:
         template: ./deploy/main.bicep
         parameters: >
            environmentType=${{ inputs.environmentType }}
-           reviewApiUrl=${{ inputs.reviewApiUrl }}
-           reviewApiKey=${{ secrets.reviewApiKey }}
+           
 
   smoke-test:
     runs-on: ubuntu-latest

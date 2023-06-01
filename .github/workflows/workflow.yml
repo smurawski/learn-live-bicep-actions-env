@@ -21,13 +21,9 @@ jobs:
     needs: lint
     with:
       environmentType: Test
-      resourceGroupName: LearnLiveWebsiteTest
-      reviewApiUrl: https://sandbox.contoso.com/reviews
+      resourceGroupName: rg-test-demo
     secrets:
-      AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID_TEST }}
-      AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
-      AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-      reviewApiKey: ${{ secrets.REVIEW_API_KEY_TEST }}
+      AZURE_SPN: ${{ secrets.AZURE_SPN_CREDENTIAL }}
   
   # Deploy to the production environment.
   deploy-production:
@@ -35,10 +31,6 @@ jobs:
     needs: deploy-test
     with:
       environmentType: Production
-      resourceGroupName: LearnLiveWebsiteProduction
-      reviewApiUrl: https://api.contoso.com/reviews
+      resourceGroupName: rg-production-demo
     secrets:
-      AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID_PRODUCTION }}
-      AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
-      AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-      reviewApiKey: ${{ secrets.REVIEW_API_KEY_PRODUCTION }}
+      AZURE_SPN: ${{ secrets.AZURE_SPN_CREDENTIAL }}
