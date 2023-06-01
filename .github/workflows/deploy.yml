@@ -13,19 +13,15 @@ on:
       AZURE_SPN:
         required: true
 
-permissions:
-  id-token: write
-  contents: read
-
 jobs:
   validate:
-     runs-on: ubuntu-latest
+     runs-on: windows-latest
      steps: 
      - uses: actions/checkout@v2
      - name: Azure Login
        uses: Azure/login@v1.4.6
        with:
-         creds: ${{ secrets.AZURE_SPN_CREDENTIAL }}
+        creds: ${{ secrets.AZURE_SPN }}
      - if: inputs.environmentType != 'Production'
        uses: azure/arm-deploy@v1
        name: Run preflight validation
@@ -61,7 +57,7 @@ jobs:
     - name: Azure Login
       uses: Azure/login@v1.4.6
       with:
-        creds: ${{ secrets.AZURE_SPN_CREDENTIAL }}
+        creds: ${{ secrets.AZURE_SPN }}
     - uses: azure/arm-deploy@v1
       id: deploy
       name: Deploy Bicep file
