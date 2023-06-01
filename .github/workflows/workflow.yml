@@ -5,6 +5,7 @@ on:
   push:
     branches: 
       - main
+      - feature/cicd-testing
   workflow_dispatch:
 
 permissions:
